@@ -1,0 +1,6 @@
+=> inputkan total semester 
+=> masukkan nilai masing-masing mata kuliah pada tiap semester
+=> masing masing nilai akan dihimpun pada satu variabel yang selanjutnya digunakan untuk mengurutkan nilai terendah dan tertinggi
+=> kemudian hitung jumlah Nilai A, B, C, D, dan E.
+=> Nilai A, B, C, D, dan E akan digunakan untuk memperoleh nilai GPA per semester.
+=> GPA per semester kemudian digunakan untuk mencari GPA total

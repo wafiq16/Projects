@@ -1,0 +1,5 @@
+names:
+- cere
+nc: 1
+train: Cere-Parkit-4/train/images
+val: Cere-Parkit-4/valid/images

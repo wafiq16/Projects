@@ -1,0 +1,53 @@
+function sysCall_init()
+    -- do some initialization here
+    motor1 = sim.getObjectHandle('Joint1');
+    motor2 = sim.getObjectHandle('Joint2');
+    motor3 = sim.getObjectHandle('Joint3');
+end
+
+function sysCall_actuation()
+    -- put your actuation code here
+    
+    m_a1 = 0.3
+    m_a2 = 0.25
+    m_a3 = 0.15
+
+    teta1 = --motor 1
+    teta2 = --motor 2
+    teta3 = --motor 3
+
+    sim.setJointTargetPosition(motor1, teta1 * math.pi/180) 
+    sim.setJointTargetPosition(motor2, teta2 * math.pi/180)
+    sim.setJointTargetPosition(motor3, teta3 * math.pi/180)
+    
+    Cteta2 = teta1 + teta2;
+    Cteta3 = Cteta2 + teta3;
+    orientasi = Cteta3;
+
+    px = m_a1 * math.cos((teta1)*3.14/180) + m_a2*math.cos((Cteta2)*3.14/180);
+    py = m_a1 * math.sin((teta1)*3.14/180) + m_a2*math.sin((Cteta2)*3.14/180); 
+
+    qx = px + m_a3*math.cos((Cteta3)*3.14/180);
+    qy = py + m_a3*math.sin((Cteta3)*3.14/180);
+
+    sim.setJointPosition(motor1, teta1)
+    sim.setJointPosition(motor2, teta2)
+    sim.setJointPosition(motor3, teta3)
+
+    sim.setJointTargetPosition(motor1, teta1)
+    sim.setJointTargetPosition(motor2, teta2)
+    sim.setJointTargetPosition(motor3, teta3)
+
+    print(qx,qy)
+end
+
+function sysCall_sensing()
+    -- put your sensing code here
+end
+
+function sysCall_cleanup()
+    -- do some clean-up here
+end
+
+-- See the user manual or the available code snippets for additional callback functions and details
+end

@@ -1,0 +1,120 @@
+function sysCall_init()
+-- do some initialization here
+    corout=coroutine.create(coroutineMain)
+    motor1 = sim.getObjectHandle('Joint1')
+    motor2 = sim.getObjectHandle('Joint2')
+    motor3 = sim.getObjectHandle('Joint3')
+    
+    m_orientasi = 90    --orientasi yang dituju
+    m_a1 = 0.300        --panjang link 1
+    m_a2 = 0.250        --panjang link 2
+    m_a3 = 0.150        --panjang link 3
+    
+    --posisi awal
+    px = 0.0 
+    py = 0.0 
+    
+    m_px = px - m_a3*math.cos(m_orientasi*3.14/180) --posisi x yang dituju
+    m_py = py - m_a3*math.sin(m_orientasi*3.14/180) --posisi y yang dituju
+    
+    teta2 = (m_px*m_px + m_py*m_py - m_a1*m_a1 - m_a2*m_a2 )/(2*m_a1*m_a2)
+    if(teta2>1.0)
+        then teta2 = 1.0
+    end
+    if(teta2 <=-1.0)
+        then teta2 = 1.0
+    end
+    --teta2 = math.acos(teta2)
+    --teta1 = (m_a2 *math.sin(teta2))/(m_a1*m_a2*math.cos(teta2))
+    teta2 = math.acos(teta2)
+    teta1 = (m_a2 *math.sin(teta2))/(m_a1+m_a2*math.cos(teta2))
+    teta1 = math.atan(m_py/m_px) - math.atan(teta1)
+
+    m_dua = teta2*(180/math.pi)
+    m_satu = teta1*(180/math.pi)
+    m_tiga = m_orientasi - m_dua - m_satu
+    
+    teta3 = m_tiga*(math.pi/180)
+    
+    sim.setJointPosition(motor1, teta1)
+    sim.setJointPosition(motor2, teta2)
+    sim.setJointPosition(motor3, teta3)
+    
+    sim.setJointTargetPosition(motor1, teta1)
+    sim.setJointTargetPosition(motor2, teta2)
+    sim.setJointTargetPosition(motor3, teta3)
+    
+    print(m_satu,m_dua,m_tiga)
+    
+end
+
+function sysCall_actuation()
+
+    m_orientasi = 90    --orientasi yang dituju
+    m_a1 = 0.300        --panjang link 1
+    m_a2 = 0.250        --panjang link 2
+    m_a3 = 0.150        --panjang link 3
+
+    px_1 = 0.4 --posisi x yang dituju
+    py_1 = 0.3 --posisi x yang dituju
+    
+    m_px = px_1 - m_a3*math.cos(m_orientasi*3.14/180) --posisi x yang dituju
+    m_py = py_1 - m_a3*math.sin(m_orientasi*3.14/180) --posisi y yang dituju
+    
+    teta2_1 = (m_px*m_px + m_py*m_py - m_a1*m_a1 - m_a2*m_a2 )/(2*m_a1*m_a2);
+    if(teta2_1>1.0)
+        then teta2_1 = 1.0
+    end
+    if(teta2_1 <=-1.0)
+        then teta2_1 = 1.0
+    end
+    --teta2 = math.acos(teta2)
+    --teta1 = (m_a2 *math.sin(teta2))/(m_a1*m_a2*math.cos(teta2))
+    teta2_1 = math.acos(teta2_1)
+    teta1_1 = (m_a2 *math.sin(teta2_1))/(m_a1+m_a2*math.cos(teta2_1))
+    teta1_1 = math.atan(m_py/m_px) - math.atan(teta1_1)
+
+    m_dua = teta2_1*(180/math.pi)
+    m_satu = teta1_1*(180/math.pi)
+    m_tiga = m_orientasi - m_dua - m_satu
+    
+    teta3_1 = m_tiga*(math.pi/180)
+    --sim.setJointPosition(motor1, teta1)
+    --sim.setJointPosition(motor2, teta2)
+    --sim.setJointPosition(motor3, teta3)
+    --sim.setJointTargetPosition(motor1, teta1)
+    --sim.setJointTargetPosition(motor2, teta2)
+    --sim.setJointTargetPosition(motor3, teta3)
+    
+    print(m_satu,m_dua,m_tiga)
+    
+    if coroutine.status(corout)~='dead' then
+        local ok,errorMsg=coroutine.resume(corout)
+        if errorMsg then
+            error(debug.traceback(corout,errorMsg),2)
+        end
+    end
+end
+
+function coroutineMain()
+    -- Put some initialization code here
+
+    
+    -- Put your main loop here, e.g.:
+    --
+    i = 0
+    while(i<8) do
+        --sim.setJointPosition(motor1, i*teta1/7)
+        --sim.setJointPosition(motor2, i*teta2/7)
+        --sim.setJointPosition(motor3, i*teta3/7)
+
+        sim.setJointTargetPosition(motor1, (teta1+(i*(teta1_1-teta1)/7)) )
+        sim.setJointTargetPosition(motor2, (teta2+(i*(teta2_1-teta2)/7)) )
+        sim.setJointTargetPosition(motor3, (teta3+(i*(teta3_1-teta3)/7)) )
+        
+        i = i + 1
+        
+        sim.wait(1, false)
+    end
+    -- See the user manual or the available code snippets for additional callback functions and details
+end

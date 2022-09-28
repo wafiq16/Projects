@@ -1,0 +1,201 @@
+#Project Pemograman Komputer 115
+#Kelompok 7 - Simulasi Perpindahan dan Tumbukan
+#Permainan Pong
+
+#Start
+import pygame
+import random
+from pygame.locals import *
+
+pygame.init()
+
+GAME_RES = WIDTH, HEIGHT = 1240, 700
+FPS = 60
+GAME_TITLE = 'Simulasi Perpindahan dan Tumbukan'
+
+window = pygame.display.set_mode(GAME_RES, HWACCEL|HWSURFACE|DOUBLEBUF)
+pygame.display.set_caption(GAME_TITLE)
+pygame.key.set_repeat(10,10)
+clock = pygame.time.Clock()
+gamefont = pygame.font.SysFont("monospace", 30)
+font_color = (0, 0, 0)
+
+#Menginisiasi Variabel dalam Permainan
+
+class Player(pygame.sprite.Sprite):
+
+    def _init_(self, image, side='left'):
+        pygame.sprite.Sprite._init_(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.y_speed = 100
+
+        self.score = 0
+        self.set_side(side)
+
+    def set_side(self, side='left'):
+        if side == 'left':
+            self.rect.x = 50
+            self.rect.y = HEIGHT // 2 - self.rect.height // 2
+            self.score_coords = (20, 20)
+        elif side == 'right':
+            self.rect.x = WIDTH - 20 - self.rect.width
+            self.rect.y = HEIGHT // 2 - self.rect.height // 2
+            self.score_coords = (WIDTH - 50, 20)
+
+
+class Ball(pygame.sprite.Sprite):
+
+    def _init_(self, image, x_speed=None, y_speed=None):
+        pygame.sprite.Sprite._init_(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+
+        if x_speed == None:
+            self.x_speed = random.choice((-5, -4, -3, 3, 4, 5))
+        else:
+            self.x_speed = x_speed
+
+        if y_speed == None:
+            self.y_speed = random.choice((-5, -4, -3, 3, 4, 5))
+        else:
+            self.y_speed = y_speed
+
+        self.rect.x = WIDTH // 2 - self.rect.width // 2
+        self.rect.y = HEIGHT // 2 - self.rect.height // 2
+
+    def reset_ball(self):
+        self.rect.x = WIDTH // 2 - self.rect.width // 2
+        self.rect.y = HEIGHT // 2 - self.rect.height // 2
+        self.x_speed = random.choice((-5, -4, -3, 3, 4, 5))
+        self.y_speed = random.choice((-5, -4, -3, 3, 4, 5))
+    
+
+
+player1_image = pygame.image.load('player_sprite.png')
+player2_image = pygame.image.load('enemy_sprite.png')
+ball_image = pygame.image.load('ball.png')
+
+background_image = pygame.image.load('background.png')
+background_image = pygame.transform.scale(
+    background_image, (WIDTH, HEIGHT)
+)
+
+vignette_image = pygame.image.load('vignette.png')
+vignette_image = pygame.transform.scale(
+    vignette_image,
+    (WIDTH, HEIGHT)
+)
+
+
+player1 = Player(player1_image, 'left')
+player2 = Player(player2_image, 'right')
+ball = Ball(ball_image)
+
+player_group = pygame.sprite.Group(player1, player2)
+ball_group = pygame.sprite.Group(ball)
+ball_group = pygame.sprite.Group([Ball(ball_image) for i in range(0, 1)])
+
+
+background_color = (123, 187, 118)
+
+#Mengakhirinya
+
+#Melakukan Pengondisian Ketika Permainan Berakhir
+game_ended = False
+while not game_ended:
+
+    #Melakukan iterasi
+    for event in pygame.event.get():
+
+        #Melakukan iterasi untuk Mengakhiri Permainan 
+        if event.type == QUIT:
+            game_ended  = True
+            break
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                game_ended  = True
+                break
+
+    #Melakukan iterasi dalam Menyerahkan Permainan kepada Pemain
+    keys_pressed = pygame.key.get_pressed()
+
+    #Melakukan iterasi dengan memasukkan Player1 
+    if keys_pressed[K_w]:
+        player1.rect.y -= player1.y_speed
+    if keys_pressed[K_s]:
+        player1.rect.y += player1.y_speed
+
+    #Melakukan iterasi dengan memasukkan Player2
+    if keys_pressed[K_o]:
+        player2.rect.y -= player2.y_speed
+    if keys_pressed[K_k]:
+        player2.rect.y += player2.y_speed
+
+    #LOGIKA PERMAINAN
+    #Perpindahan Bola
+    for ball in ball_group:
+        ball.rect.x += ball.x_speed
+        ball.rect.y += ball.y_speed
+
+        #Melakukan iterasi pemantulan bola ketika terjadi tumbukan dengan tongkat
+        if pygame.sprite.spritecollide(ball, player_group, False) != []:
+            ball.x_speed *= -1
+
+        #Melakukan iterasi dengan mengamankan bola agar tetap pada layar 
+        if ball.rect.x + ball.rect.width >= WIDTH:
+            player1.score += 1
+            ball.reset_ball()
+
+        if ball.rect.x <= 0:
+            player2.score += 1
+            ball.reset_ball()
+
+        if ball.rect.y + ball.rect.height >= HEIGHT or ball.rect.y <= 0:
+            ball.y_speed *= -1
+
+    #Melakukan iterasi dengan mengamankan tongkat pada layar
+    if player1.rect.y + player1.rect.height >= HEIGHT - 20:
+        player1.rect.y = HEIGHT - player1.rect.height - 20
+    if player1.rect.y < 20:
+        player1.rect.y = 20
+
+    if player2.rect.y + player2.rect.height >= HEIGHT - 20:
+        player2.rect.y = HEIGHT - player2.rect.height - 20
+    if player2.rect.y < 20:
+        player2.rect.y = 20
+
+    #Menampilkan Gambar Hasil Akhir
+    #Menyimpan skor sementara dengan gambar hasil akhir
+    player1_score_buffer = gamefont.render(str(player1.score),
+                                           1,
+                                            font_color)
+    player2_score_buffer = gamefont.render(str(player2.score),
+                                           1,
+                                            font_color)
+
+    #Mengembalikan layar tampilan menggunakan pengaturan ke awal
+    #pygame.Surface.fill(window, background_color)
+    pygame.Surface.blit(window, background_image, (0, 0))
+
+    pygame.Surface.blit(window, vignette_image, (0, 0))
+
+    #Menggambar element permainan 
+    player_group.draw(window)
+    ball_group.draw(window)
+
+    #Menggambar UI/UX
+    pygame.Surface.blit(window,
+                        player1_score_buffer,
+                        player1.score_coords)
+    pygame.Surface.blit(window,
+                        player2_score_buffer,
+                        player2.score_coords)
+
+    #Menampilkan tampilan terbaru 
+    pygame.display.update()
+    clock.tick(FPS)
+
+pygame.quit()
+exit(0)
+#Stop

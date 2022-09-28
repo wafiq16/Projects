@@ -1,0 +1,5 @@
+jalankan program secara berurutan
+
+1. PRBS.m
+2. sistemidentifikasi.mdl
+3. identifikasi.m

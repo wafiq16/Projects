@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>assets/images/background.jpg</file>
+        <file>assets/images/bg.jpg</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>assets/fonts/Roboto/Roboto-BlackItalic.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Black.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-BoldItalic.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Bold.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-MediumItalic.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Medium.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Italic.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Regular.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-LightItalic.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Light.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-ThinItalic.ttf</file>
+        <file>assets/fonts/Roboto/Roboto-Thin.ttf</file>
+        <file>assets/fonts/Roboto/LICENSE.txt</file>
+    </qresource>
+</RCC>
